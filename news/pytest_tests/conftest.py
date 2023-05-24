@@ -8,9 +8,17 @@ from news.models import News, Comment
 def author(django_user_model):  
     return django_user_model.objects.create(username='Автор')
 
+def reader(django_user_model):  
+    return django_user_model.objects.create(username='НеАвтор')
+
 @pytest.fixture
 def author_client(author, client):  # Вызываем фикстуру автора и клиента.
     client.force_login(author)  # Логиним автора в клиенте.
+    return client
+
+@pytest.fixture
+def reader_client(reader, client):  # Вызываем фикстуру автора и клиента.
+    client.force_login(reader)  # Логиним автора в клиенте.
     return client
 
 @pytest.fixture
@@ -23,6 +31,21 @@ def pk_for_args(news):
     # И возвращает кортеж, который содержит slug заметки.
     # На то, что это кортеж, указывает запятая в конце выражения.
     return news.id,
+
+@pytest.fixture
+def comment(author):
+    comment = Comment.objects.create(
+        news=news,
+        author=author,
+        text='Текст комментария'
+    )
+    return comment
+
+@pytest.fixture
+def pk_for_args_comment(comment):  
+    # И возвращает кортеж, который содержит slug заметки.
+    # На то, что это кортеж, указывает запятая в конце выражения.
+    return comment.id,
 
 #@pytest.fixture
 #def news(author):
